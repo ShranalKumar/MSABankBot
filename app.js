@@ -15,7 +15,9 @@ var connector = new builder.ChatConnector({
 server.post('/api/messages', connector.listen());
 
 var bot = new builder.UniversalBot(connector, function(session) {
+    var welcome = new builder.HeroCard().buttons([
+        builder.CardAction.imBack(session, 'ViewBalance', 'ViewBalance')
+    ]);
     session.send("Please try again");
 });
-
 luis.startDialog(bot);
