@@ -1,5 +1,6 @@
 var restify = require('restify');
 var builder = require('botbuilder');
+var luis = require('./controller/LuisDialog');
 
 var server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, function() {
@@ -14,5 +15,7 @@ var connector = new builder.ChatConnector({
 server.post('/api/messages', connector.listen());
 
 var bot = new builder.UniversalBot(connector, function(session) {
-    session.send("You said %s", session.message.text);
+    session.send("Please try again");
 });
+
+luis.startDialog(bot);
