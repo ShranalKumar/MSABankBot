@@ -8,16 +8,27 @@ server.listen(process.env.port || process.env.PORT || 3978, function() {
 });
 
 var connector = new builder.ChatConnector({
-    appID: process.env.MICROSOFT_APP_ID,
-    appPassword: process.env.MICROSOFT_APP_PASSWORD
+    appID: 'aa100423-6c66-48c4-acc5-f168241a6784',
+    appPassword: 'jxdhLJBO98@#fqpWTT067+-'
 });
 
+
+console.log("bot");
+var bot = new builder.UniversalBot(connector);
 server.post('/api/messages', connector.listen());
 
-var bot = new builder.UniversalBot(connector, function(session) {
-    var welcome = new builder.HeroCard().buttons([
-        builder.CardAction.imBack(session, 'ViewBalance', 'ViewBalance')
-    ]);
-    session.send("Please try again");
+bot.on('conversationUpdate', function(session) {
+    if (message.membersAdded) {
+        message.membersAdded.forEach(function(identity) {
+            if (identity.id === message.address.bot.id) {
+                bot.beginDialog(message.address, '/');
+            }
+        });
+    }
 });
-luis.startDialog(bot);
+
+bot.dialog('/', function(session) {
+    session.send("Hello");
+});
+
+//luis.startDialog(bot);
