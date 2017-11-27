@@ -12,6 +12,11 @@ exports.retrieveCards = function(session) {
     rest.getAllCards(url, session, handleCardResponse);
 }
 
+exports.makeApplication = function(session, title, firstName, lastName, dob, email, phone, card) {
+    var url = "http://msabankbot.azurewebsites.net/tables/Application";
+    rest.postApplication(url, title, firstName, lastName, dob, email, phone, card);
+}
+
 function handleCurrencyResponse(body, session, base, amount) {
     console.log(body);
     var allDetails = JSON.parse(body);

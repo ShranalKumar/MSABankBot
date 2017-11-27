@@ -19,3 +19,31 @@ exports.getAllCards = function(url, session, callback) {
         }
     });
 }
+
+exports.postApplication = function(url, title, firstName, lastName, dob, email, phone, card) {
+    var options = {
+        url: url,
+        method: 'POST',
+        headers: {
+            'ZUMO-API-VERSION': '2.0.0',
+            'Content-Type': 'application/json'
+        },
+        json: {
+            "title": title,
+            "firstname": firstName,
+            "lastname": lastName,
+            "dob": dob,
+            "email": email,
+            "phone": phone,
+            "card": card
+        }
+    };
+
+    request(options, function(error, response, body) {
+        if (!error && response.statusCode === 200) {
+            console.log(body);
+        } else {
+            console.log(error);
+        }
+    });
+}

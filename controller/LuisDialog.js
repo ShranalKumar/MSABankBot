@@ -54,11 +54,19 @@ exports.startDialog = function(bot) {
     bot.dialog('Apply', [
         function(session, args) {
             if (session.message && session.message.value) {
-                console.log(session.message.value);
+                console.log(session.message.value.card);
+                var title = session.message.value.title;
+                var firstName = session.message.value.firstname;
+                var lastName = session.message.value.lastname;
+                var dob = session.message.value.datofbirth;
+                var email = session.message.value.email;
+                var phone = session.message.value.phone;
+                var card = session.message.value.card;
+                acc.makeApplication(session, title, firstName, lastName, dob, email, phone, card);
             } else {
                 var application = getApplicationCard(session);
                 var msg = new builder.Message(session).addAttachment(application);
-                sesion.send(msg);
+                session.send(msg);
             }
         }
     ]).triggerAction({
@@ -382,8 +390,12 @@ function getApplicationCard(session) {
                     "weight": "bolder"
                 },
                 {
+                    "type": "TextBlock",
+                    "text": "Title*"
+                },
+                {
                     "type": "Input.ChoiceSet",
-                    "id": "Title",
+                    "id": "title",
                     "style": "compact",
                     "choices": [{
                             "title": "Mr.",
@@ -417,38 +429,85 @@ function getApplicationCard(session) {
                 },
                 {
                     "type": "TextBlock",
-                    "text": "First Name/s"
+                    "text": "First Name/s*"
                 },
                 {
                     "type": "Input.Text",
                     "id": "firstname",
-                    "placeholder": "Enter your First Name/s"
+                    "placeholder": "Enter your First Name/s..."
                 },
                 {
                     "type": "TextBlock",
-                    "text": "Last Name"
+                    "text": "Last Name*"
                 },
                 {
                     "type": "Input.Text",
                     "id": "lastname",
-                    "placeholder": "Enter your Last Name"
+                    "placeholder": "Enter your Last Name..."
                 },
                 {
                     "type": "TextBlock",
-                    "text": "Date Of Birth (dd/mm/yyyy)"
+                    "text": "Date Of Birth* (dd/mm/yyyy)"
                 },
                 {
                     "type": "Input.Text",
                     "id": "dateofbirth",
-                    "placeholder": "Enter your Date Of Birth"
+                    "placeholder": "Enter your Date Of Birth..."
                 },
                 {
                     "type": "TextBlock",
+                    "text": "Email Address*"
+                },
+                {
+                    "type": "Input.Text",
+                    "id": "email",
+                    "placeholder": "Enter your email address..."
+                },
+                {
+                    "type": "TextBlock",
+                    "text": "Contact Number*"
+                },
+                {
+                    "type": "Input.Text",
+                    "id": "phone",
+                    "placeholder": "Enter your home or mobile phone number..."
+                },
+                {
+                    "type": "TextBlock",
+                    "text": "Which Card would you like to apply for?*"
+                },
+                {
+                    "type": "Input.ChoiceSet",
+                    "id": "card",
+                    "style": "compact",
+                    "choices": [{
+                            "title": "Low Rate Visa",
+                            "value": "Low Rate Visa"
+                        },
+                        {
+                            "title": "Cash Back Visa",
+                            "value": "Cash Back Visa"
+                        },
+                        {
+                            "title": "Airpoints Visa",
+                            "value": "Airpoints Visa"
+                        },
+                        {
+                            "title": "Cash Back Visa Platinum",
+                            "value": "Cash Back Visa Platinum"
+                        },
+                        {
+                            "title": "Airpoints Visa Platinum",
+                            "value": "Airpoints Visa Platinum"
+                        }
+                    ]
                 }
-
-
-            ]
-
+            ],
+            actions: [{
+                "type": "Action.Submit",
+                "title": "Apply Now!"
+            }]
         }
-    }
+    };
+    return application;
 }
