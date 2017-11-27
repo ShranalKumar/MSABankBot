@@ -14,8 +14,8 @@ exports.startDialog = function(bot) {
                 .title("Welcome to the Contoso Bank Bot")
                 .subtitle("What would you like to do today?")
                 .buttons([
-                    builder.CardAction.imBack(session, 'Credit Cards', 'View Credit Cards'),
-                    builder.CardAction.imBack(session, 'Currency Exchange', 'View Exchange Rates')
+                    builder.CardAction.postBack(session, 'Credit Cards', 'View Credit Cards'),
+                    builder.CardAction.postBack(session, 'Currency Exchange', 'View Exchange Rates')
                 ]);
             session.send(new builder.Message(session).addAttachment(welcome));
         }
@@ -42,14 +42,34 @@ exports.startDialog = function(bot) {
         matches: 'Currency'
     });
 
+
     bot.dialog('CreditCard', [
         function(session, args) {
             acc.retrieveCards(session);
-            session.send("cards");
         }
     ]).triggerAction({
         matches: 'Cards'
     });
+
+    bot.dialog('Apply', [
+        function(session, args) {
+            if (session.message && session.message.value) {
+                console.log(session.message.value);
+            } else {
+                var application = getApplicationCard(session);
+                var msg = new builder.Message(session).addAttachment(application);
+                sesion.send(msg);
+            }
+        }
+    ]).triggerAction({
+        matches: 'Apply'
+    });
+}
+
+exports.showCards = function(session, cardCarousel) {
+    session.send(new builder.Message(session)
+        .attachmentLayout(builder.AttachmentLayout.carousel)
+        .attachments(cardCarousel));
 }
 
 function getExchangeCard(session) {
@@ -348,4 +368,87 @@ function getExchangeCard(session) {
         }
     };
     return exchange;
+}
+
+function getApplicationCard(session) {
+    var application = {
+        contentType: "application/vnd.microsoft.card.adaptive",
+        content: {
+            type: "AdaptiveCard",
+            body: [{
+                    "type": "TextBlock",
+                    "text": "Credit Card Application",
+                    "size": "large",
+                    "weight": "bolder"
+                },
+                {
+                    "type": "Input.ChoiceSet",
+                    "id": "Title",
+                    "style": "compact",
+                    "choices": [{
+                            "title": "Mr.",
+                            "value": "Mr."
+                        },
+                        {
+                            "title": "Mrs.",
+                            "value": "Mrs."
+                        },
+                        {
+                            "title": "Miss.",
+                            "value": "Miss."
+                        },
+                        {
+                            "title": "Ms.",
+                            "value": "Ms."
+                        },
+                        {
+                            "title": "Dr.",
+                            "value": "Dr."
+                        },
+                        {
+                            "title": "Hon.",
+                            "value": "Hon."
+                        },
+                        {
+                            "title": "Sir.",
+                            "value": "Sir."
+                        }
+                    ]
+                },
+                {
+                    "type": "TextBlock",
+                    "text": "First Name/s"
+                },
+                {
+                    "type": "Input.Text",
+                    "id": "firstname",
+                    "placeholder": "Enter your First Name/s"
+                },
+                {
+                    "type": "TextBlock",
+                    "text": "Last Name"
+                },
+                {
+                    "type": "Input.Text",
+                    "id": "lastname",
+                    "placeholder": "Enter your Last Name"
+                },
+                {
+                    "type": "TextBlock",
+                    "text": "Date Of Birth (dd/mm/yyyy)"
+                },
+                {
+                    "type": "Input.Text",
+                    "id": "dateofbirth",
+                    "placeholder": "Enter your Date Of Birth"
+                },
+                {
+                    "type": "TextBlock",
+                }
+
+
+            ]
+
+        }
+    }
 }

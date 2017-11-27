@@ -1,4 +1,6 @@
 var rest = require('../API/RestClient');
+var builder = require('botbuilder');
+var luis = require('./LuisDialog');
 
 exports.retrieveRates = function(session, base, symbols, amount) {
     var url = "https://api.fixer.io/latest?base=" + base + "&symbols=" + symbols;
@@ -7,7 +9,7 @@ exports.retrieveRates = function(session, base, symbols, amount) {
 
 exports.retrieveCards = function(session) {
     var url = "http://msabankbot.azurewebsites.net/tables/CreditCards";
-    rest.getAllCards(url, session, handleCardsResponse);
+    rest.getAllCards(url, session, handleCardResponse);
 }
 
 function handleCurrencyResponse(body, session, base, amount) {
@@ -20,6 +22,27 @@ function handleCurrencyResponse(body, session, base, amount) {
     }
 }
 
-function handleCardsResponse(body, session) {
+function handleCardResponse(body, session) {
     var allDetails = JSON.parse(body);
+
+    var cardCarousel = [];
+
+    for (var det in allDetails) {
+        var cardName = allDetails[det].cardName;
+        var interestRate = allDetails[det].interestRate;
+        var annualFee = allDetails[det].annualFee;
+        var interestFreeDays = allDetails[det].interestFree;
+
+        var text = "Interest Rate: " + interestRate + '\n\n' + "Annual Fee: " +
+            annualFee + '\n\n' + "Interest Free Days: " + interestFreeDays;
+
+        var card = new builder.HeroCard(session)
+            .title(cardName)
+            .text(text)
+            .buttons([
+                builder.CardAction.postBack(session, 'Apply Now', 'Apply Now')
+            ]);
+        cardCarousel.push(card);
+    }
+    luis.showCards(session, cardCarousel);
 }
