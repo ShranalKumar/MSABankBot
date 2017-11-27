@@ -8,8 +8,8 @@ server.listen(process.env.port || process.env.PORT || 3978, function() {
 });
 
 var connector = new builder.ChatConnector({
-    appID: 'aa100423-6c66-48c4-acc5-f168241a6784',
-    appPassword: 'aXM983[!ikeelsKOEUW64_('
+    appID: '16db0dd2-ae1b-466b-9395-7d3918b633d1',
+    appPassword: 'sqfrYFHXB68%}misYY958-!'
 });
 
 var bot = new builder.UniversalBot(connector, function(session) {
