@@ -1,23 +1,25 @@
 var rest = require('../API/RestClient');
 
-exports.displayBalance = function(session, username) {
-    var url = "http://msabankbot.azurewebsites.net/tables/AccDetails";
-    rest.getBalance(url, session, username, handleBalanceResponse);
-};
+exports.retrieveRates = function(session, base, symbols, amount) {
+    var url = "https://api.fixer.io/latest?base=" + base + "&symbols=" + symbols;
+    rest.getCurrency(url, session, handleCurrencyResponse, base, amount);
+}
 
-function handleBalanceResponse(body, session, username) {
+exports.retrieveCards = function(session) {
+    var url = "http://msabankbot.azurewebsites.net/tables/CreditCards";
+    rest.getAllCards(url, session, handleCardsResponse);
+}
+
+function handleCurrencyResponse(body, session, base, amount) {
     console.log(body);
-    var accDets = JSON.parse(body);
-    var allDets = '';
-
-    for (var det in accDets) {
-        var user = accDets[det].username;
-        var bal = accDets[det].balance;
-
-        if (username.toLowerCase() === user.toLowerCase()) {
-            allDets = bal;
-        }
+    var allDetails = JSON.parse(body);
+    //session.send(allDetails.rates.AUD.toString());
+    for (var det in allDetails.rates) {
+        var converted = amount * allDetails.rates[det];
+        session.send(amount + " " + base + " to " + det + " is " + converted);
     }
-    session.send('Your balance is %s', allDets);
+}
 
+function handleCardsResponse(body, session) {
+    var allDetails = JSON.parse(body);
 }

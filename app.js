@@ -8,27 +8,14 @@ server.listen(process.env.port || process.env.PORT || 3978, function() {
 });
 
 var connector = new builder.ChatConnector({
-    appID: 'aa100423-6c66-48c4-acc5-f168241a6784',
-    appPassword: 'jxdhLJBO98@#fqpWTT067+-'
+    appID: process.env.MICROSOFT_APP_ID,
+    appPassword: process.env.MICROSOFT_APP_PASSWORD
 });
 
+var bot = new builder.UniversalBot(connector, function(session) {
+    session.send("You said: %s", session.message.text);
+});
 
-console.log("bot");
-var bot = new builder.UniversalBot(connector);
 server.post('/api/messages', connector.listen());
 
-bot.on('conversationUpdate', function(session) {
-    if (message.membersAdded) {
-        message.membersAdded.forEach(function(identity) {
-            if (identity.id === message.address.bot.id) {
-                bot.beginDialog(message.address, '/');
-            }
-        });
-    }
-});
-
-bot.dialog('/', function(session) {
-    session.send("Hello");
-});
-
-//luis.startDialog(bot);
+luis.startDialog(bot);
