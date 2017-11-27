@@ -24,6 +24,11 @@ exports.makeApplication = function(session, title, firstName, lastName, dob, ema
     rest.postApplication(url, title, firstName, lastName, dob, email, phone, card);
 }
 
+exports.getApplication = function(session, name) {
+    var url = "http://msabankbot.azurewebsites.net/tables/Application";
+    rest.getAllAplications(url, session, name, handleApplicationResponse);
+}
+
 function handleCurrencyResponse(body, session, base, amount) {
     console.log(body);
     var allDetails = JSON.parse(body);
@@ -58,4 +63,33 @@ function handleCardResponse(body, session) {
         cardCarousel.push(card);
     }
     luis.showCards(session, cardCarousel);
+}
+
+function handleApplicationResponse(body, session, name) {
+    var allApplications = JSON.parse(body);
+
+    for (var app in allApplications) {
+        if (allApplications[app].firstname.toLowerCase() == name.toLowerCase()) {
+            var title = allApplications[app].title;
+            var firstName = allApplications[app].firstname;
+            var lastName = allApplications[app].lastname;
+            var email = allApplications[app].email;
+            var phone = allApplications[app].phone;
+            var card = allApplications[app].card;
+
+            var text = title + ' ' + firstName + ' ' + lastName + '\n\n' +
+                email + '\n\n' + phone + '\n\n' + card;
+
+            var application = new builder.HeroCard(session)
+                .title('Credit Card Application')
+                .text(text)
+                .buttons([
+                    builder.CardAction.postBack(session, 'Welcome', 'Ok'),
+                    builder.CardAction.postBack(session, 'Delete', 'Cancel Application')
+                ]);
+
+            luis.showApplication(session, application);
+        }
+    }
+
 }

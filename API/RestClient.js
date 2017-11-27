@@ -20,6 +20,16 @@ exports.getAllCards = function(url, session, callback) {
     });
 }
 
+exports.getAllAplications = function(url, session, name, callback) {
+    request.get(url, { 'headers': { 'ZUMO-API-VERSION': '2.0.0' } }, function(err, res, body) {
+        if (err) {
+            console.log(err);
+        } else {
+            callback(body, session, name);
+        }
+    });
+}
+
 exports.postApplication = function(url, title, firstName, lastName, dob, email, phone, card) {
     var options = {
         url: url,

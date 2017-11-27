@@ -15,7 +15,8 @@ exports.startDialog = function(bot) {
                 .subtitle("What would you like to do today?")
                 .buttons([
                     builder.CardAction.postBack(session, 'Cards', 'View Credit Cards'),
-                    builder.CardAction.postBack(session, 'Currency', 'View Exchange Rates')
+                    builder.CardAction.postBack(session, 'Currency', 'View Exchange Rates'),
+                    builder.CardAction.postBack(session, 'Application', 'View Credit Card Applications')
                 ]);
             session.send(new builder.Message(session).addAttachment(welcome));
         }
@@ -78,12 +79,38 @@ exports.startDialog = function(bot) {
     ]).triggerAction({
         matches: 'Apply'
     });
+    bot.dialog('Application', [
+        function(session, args) {
+            builder.Prompts.text(session, "Please enter you name to retrieve your application details.");
+        },
+        function(session, results) {
+            if (results.response) {
+                session.send("Retrieving application details...");
+                session.sendTyping();
+                acc.getApplication(session, results.response);
+            }
+        }
+    ]).triggerAction({
+        matches: 'Application'
+    });
+
+    bot.dialog('Delete', [
+        function(session, args) {
+            session.send('Delete');
+        }
+    ]).triggerAction({
+        matches: 'Delete'
+    });
 }
 
 exports.showCards = function(session, cardCarousel) {
     session.send(new builder.Message(session)
         .attachmentLayout(builder.AttachmentLayout.carousel)
         .attachments(cardCarousel));
+}
+
+exports.showApplication = function(session, card) {
+    session.send(new builder.Message(session).addAttachment(card));
 }
 
 function getExchangeCard(session) {
