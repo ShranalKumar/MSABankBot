@@ -8,14 +8,14 @@ exports.startDialog = function(bot) {
 
     bot.dialog('Welcome', [
         function(session, args, next) {
-            console.log("hi");
+            session.sendTyping();
             session.dialogData.args = args || {};
             var welcome = new builder.HeroCard(session)
                 .title("Welcome to the Contoso Bank Bot")
                 .subtitle("What would you like to do today?")
                 .buttons([
-                    builder.CardAction.postBack(session, 'Credit Cards', 'View Credit Cards'),
-                    builder.CardAction.postBack(session, 'Currency Exchange', 'View Exchange Rates')
+                    builder.CardAction.postBack(session, 'Cards', 'View Credit Cards'),
+                    builder.CardAction.postBack(session, 'Currency', 'View Exchange Rates')
                 ]);
             session.send(new builder.Message(session).addAttachment(welcome));
         }
@@ -26,6 +26,7 @@ exports.startDialog = function(bot) {
     bot.dialog('Currency', [
         function(session, args) {
             if (session.message && session.message.value) {
+                session.sendTyping();
                 console.log(session.message.value);
                 var base = session.message.value.base;
                 var symbol = session.message.value.symbol;
@@ -45,6 +46,7 @@ exports.startDialog = function(bot) {
 
     bot.dialog('CreditCard', [
         function(session, args) {
+            session.sendTyping();
             acc.retrieveCards(session);
         }
     ]).triggerAction({
@@ -54,6 +56,7 @@ exports.startDialog = function(bot) {
     bot.dialog('Apply', [
         function(session, args) {
             if (session.message && session.message.value) {
+                session.sendTyping();
                 console.log(session.message.value.card);
                 var title = session.message.value.title;
                 var firstName = session.message.value.firstname;
@@ -63,6 +66,9 @@ exports.startDialog = function(bot) {
                 var phone = session.message.value.phone;
                 var card = session.message.value.card;
                 acc.makeApplication(session, title, firstName, lastName, dob, email, phone, card);
+                session.send("Your application for a " + card + " was successful!");
+                session.delay(5000);
+                session.beginDialog('Welcome');
             } else {
                 var application = getApplicationCard(session);
                 var msg = new builder.Message(session).addAttachment(application);

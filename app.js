@@ -13,6 +13,8 @@ var connector = new builder.ChatConnector({
 });
 
 var bot = new builder.UniversalBot(connector, function(session) {
+    session.sendTyping();
+    session.beginDialog("Welcome");
     session.send("You said: %s", session.message.text);
 });
 

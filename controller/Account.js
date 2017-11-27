@@ -3,8 +3,15 @@ var builder = require('botbuilder');
 var luis = require('./LuisDialog');
 
 exports.retrieveRates = function(session, base, symbols, amount) {
+    // if (base == "" || symbols == "" || amount == "") {
+    //     session.send("Please complete the currency exchange form");
+    //     session.endDialog();
+    //     session.beginDialog('Currency');
+    // } else {
     var url = "https://api.fixer.io/latest?base=" + base + "&symbols=" + symbols;
     rest.getCurrency(url, session, handleCurrencyResponse, base, amount);
+    // session.beginDialog("Welcome");
+    // }
 }
 
 exports.retrieveCards = function(session) {
@@ -20,10 +27,11 @@ exports.makeApplication = function(session, title, firstName, lastName, dob, ema
 function handleCurrencyResponse(body, session, base, amount) {
     console.log(body);
     var allDetails = JSON.parse(body);
-    //session.send(allDetails.rates.AUD.toString());
     for (var det in allDetails.rates) {
         var converted = amount * allDetails.rates[det];
         session.send(amount + " " + base + " to " + det + " is " + converted);
+        // session.delay(5000);
+        session.beginDialog("Welcome");
     }
 }
 
