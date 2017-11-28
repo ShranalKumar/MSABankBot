@@ -570,11 +570,15 @@ function getApplicationCard(session) {
 
 function checkAttachment(session) {
     var message = session.message.text;
-
-    if ((session.message.attachments && session.message.attachments.length > 0) || message.includes('http')) {
+    if (message.text.includes('http')) {
         session.send('Image URL recieved. Please wait...');
         session.sendTyping();
-        customVision.analyseImage(session)
+        customVision.analyseImageUrl(session)
+        return true;
+    } else if (session.message.attachments && session.message.attachments.length > 0) {
+        session.send('Image file recieved. Please wait...');
+        session.sendTyping();
+        customVision.analyseImageFile(session);
         return true;
     } else {
         return false;
