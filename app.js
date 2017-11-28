@@ -8,8 +8,8 @@ server.listen(process.env.port || process.env.PORT || 3978, function() {
 });
 
 var connector = new builder.ChatConnector({
-    appID: "28ce156a-ebf9-4967-93f7-7291da60ebe3",
-    appPassword: "cbzVMBF6808)[ipyvVUX5|}"
+    appID: "8e7b978a-fd72-496c-80b5-32e2b068a260",
+    appPassword: "felV26!womcLBGXTI633}_?"
         // appID: process.env.MICROSOFT_APP_ID,
         // appPassword: process.env.MICROSOFT_APP_PASSWORD
 });
