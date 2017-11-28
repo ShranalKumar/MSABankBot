@@ -3,7 +3,7 @@ var builder = require('botbuilder');
 
 exports.analyseImage = function(session) {
     request.post({
-        url: 'https://southcentralus.api.cognitive.microsoft.com/customvision/v1.0/Prediction/46f22fa2-dcff-4e73-a029-3c4809dd714e/url?iterationId=4777fca9-afc1-4cd3-b532-5a49dad87e97',
+        url: 'https://southcentralus.api.cognitive.microsoft.com/customvision/v1.0/Prediction/46f22fa2-dcff-4e73-a029-3c4809dd714e/url?iterationId=0c17c9f6-d1ae-48c4-86cd-19ea6c073821',
         json: true,
         headers: {
             'Content-Type': 'application/json',

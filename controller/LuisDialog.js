@@ -91,7 +91,7 @@ exports.startDialog = function(bot) {
     // View credit card application
     bot.dialog('Application', [
         function(session, args) {
-            builder.Prompts.text(session, "Please enter you name to retrieve your application details.");
+            builder.Prompts.text(session, "Please enter your name to retrieve your application details.");
         },
         function(session, results) {
             if (results.response) {
