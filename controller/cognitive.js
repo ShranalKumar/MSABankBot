@@ -23,7 +23,10 @@ function validResponse(session, body) {
             .images([
                 builder.CardImage.create(session, session.message.text)
             ]);
-        return new builder.Message(session).addAttachment(card);
+        session.send(new builder.Message(session).addAttachment(card));
+        session.message.text = "";
+        session.sendTyping();
+        session.beginDialog('Welcome');
     } else {
         console.log("Please try again.");
     }

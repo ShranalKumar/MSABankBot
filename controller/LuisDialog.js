@@ -572,7 +572,9 @@ function checkAttachment(session) {
     var message = session.message.text;
 
     if ((session.message.attachments && session.message.attachments.length > 0) || message.includes('http')) {
-        customVision.analyseImage(session);
+        session.send('Image URL recieved. Please wait...');
+        session.sendTyping();
+        customVision.analyseImage(session)
         return true;
     } else {
         return false;
