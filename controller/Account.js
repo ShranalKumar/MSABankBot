@@ -3,15 +3,8 @@ var builder = require('botbuilder');
 var luis = require('./LuisDialog');
 
 exports.retrieveRates = function(session, base, symbols, amount) {
-    // if (base == "" || symbols == "" || amount == "") {
-    //     session.send("Please complete the currency exchange form");
-    //     session.endDialog();
-    //     session.beginDialog('Currency');
-    // } else {
     var url = "https://api.fixer.io/latest?base=" + base + "&symbols=" + symbols;
     rest.getCurrency(url, session, handleCurrencyResponse, base, amount);
-    // session.beginDialog("Welcome");
-    // }
 }
 
 exports.retrieveCards = function(session) {
@@ -29,13 +22,26 @@ exports.getApplication = function(session, name) {
     rest.getAllAplications(url, session, name, handleApplicationResponse);
 }
 
+exports.deleteApplication = function(session, name) {
+    var url = "http://msabankbot.azurewebsites.net/tables/Application";
+    rest.getAllAplications(url, session, name, function(body, session, name) {
+        var applications = JSON.parse(body);
+
+        for (var app in applications) {
+            if (applications[app].firstname.toLowerCase() == name.toLowerCase() && !applications[app].deleted) {
+                rest.deleteApplication(url, session, applications[app].id, applications[app].card,
+                    applications[app].firstname, applications[app].lastname, handleDeleteResponse);
+            }
+        }
+    });
+}
+
 function handleCurrencyResponse(body, session, base, amount) {
     console.log(body);
     var allDetails = JSON.parse(body);
     for (var det in allDetails.rates) {
         var converted = amount * allDetails.rates[det];
         session.send(amount + " " + base + " to " + det + " is " + converted);
-        // session.delay(5000);
         session.beginDialog("Welcome");
     }
 }
@@ -91,5 +97,11 @@ function handleApplicationResponse(body, session, name) {
             luis.showApplication(session, application);
         }
     }
+}
 
+function handleDeleteResponse(body, session, firstname, lastname, card) {
+    session.sendTyping();
+    session.send('Thank you ' + firstname + ' ' + lastname + '.\n\nYour application for a ' +
+        card + ' card has been deleted.');
+    session.beginDialog('Welcome');
 }

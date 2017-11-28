@@ -12,7 +12,6 @@ var connector = new builder.ChatConnector({
     // appPassword: 'sqfrYFHXB68%}misYY958-!'
     appID: process.env.MICROSOFT_APP_ID,
     appPassword: process.env.MICROSOFT_APP_PASSWORD
-
 });
 
 server.post('/api/messages', connector.listen());
@@ -22,7 +21,5 @@ var bot = new builder.UniversalBot(connector, function(session) {
     session.beginDialog("Welcome");
     session.send("You said: %s", session.message.text);
 });
-
-
 
 luis.startDialog(bot);

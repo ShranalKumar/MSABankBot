@@ -6,6 +6,7 @@ exports.startDialog = function(bot) {
 
     bot.recognizer(recognizer);
 
+    // Welcome Dialog, shows options for new users to the website.
     bot.dialog('Welcome', [
         function(session, args, next) {
             session.sendTyping();
@@ -24,11 +25,11 @@ exports.startDialog = function(bot) {
         matches: 'Welcome'
     });
 
+    // Currency exchange dialog
     bot.dialog('Currency', [
         function(session, args) {
             if (session.message && session.message.value) {
                 session.sendTyping();
-                console.log(session.message.value);
                 var base = session.message.value.base;
                 var symbol = session.message.value.symbol;
                 var amount = session.message.value.amount;
@@ -37,6 +38,7 @@ exports.startDialog = function(bot) {
                 session.dialogData.args = args || {};
                 var adaptiveCard = getExchangeCard(session);
                 var msg = new builder.Message(session).addAttachment(adaptiveCard)
+                session.sendTyping();
                 session.send(msg);
             }
         }
@@ -44,7 +46,7 @@ exports.startDialog = function(bot) {
         matches: 'Currency'
     });
 
-
+    // Credit card dialog, show carousel of credit cards
     bot.dialog('CreditCard', [
         function(session, args) {
             session.sendTyping();
@@ -54,11 +56,11 @@ exports.startDialog = function(bot) {
         matches: 'Cards'
     });
 
+    // Apply for credit card dialog. Gets card from helper function
     bot.dialog('Apply', [
         function(session, args) {
             if (session.message && session.message.value) {
                 session.sendTyping();
-                console.log(session.message.value.card);
                 var title = session.message.value.title;
                 var firstName = session.message.value.firstname;
                 var lastName = session.message.value.lastname;
@@ -68,7 +70,6 @@ exports.startDialog = function(bot) {
                 var card = session.message.value.card;
                 acc.makeApplication(session, title, firstName, lastName, dob, email, phone, card);
                 session.send("Your application for a " + card + " was successful!");
-                session.delay(5000);
                 session.beginDialog('Welcome');
             } else {
                 var application = getApplicationCard(session);
@@ -79,12 +80,15 @@ exports.startDialog = function(bot) {
     ]).triggerAction({
         matches: 'Apply'
     });
+
+    // View credit card application
     bot.dialog('Application', [
         function(session, args) {
             builder.Prompts.text(session, "Please enter you name to retrieve your application details.");
         },
         function(session, results) {
             if (results.response) {
+                session.conversationData['username'] = results.response;
                 session.send("Retrieving application details...");
                 session.sendTyping();
                 acc.getApplication(session, results.response);
@@ -94,25 +98,36 @@ exports.startDialog = function(bot) {
         matches: 'Application'
     });
 
+    // Delete credit card application with confirmation
     bot.dialog('Delete', [
         function(session, args) {
-            session.send('Delete');
+            builder.Prompts.confirm(session, 'Are you sure you want to delete your applcation? Yes/No');
+        },
+        function(session, results) {
+            if (results.response) {
+                session.send('Please wait while I delete your application...');
+                session.sendTyping();
+                acc.deleteApplication(session, session.conversationData['username']);
+            }
         }
     ]).triggerAction({
         matches: 'Delete'
     });
 }
 
+// Format hero cards into carousel and diplays credit cards available
 exports.showCards = function(session, cardCarousel) {
     session.send(new builder.Message(session)
         .attachmentLayout(builder.AttachmentLayout.carousel)
         .attachments(cardCarousel));
 }
 
+// Show the application form for a credit card
 exports.showApplication = function(session, card) {
     session.send(new builder.Message(session).addAttachment(card));
 }
 
+// Creates exchange cards using adaptive cards and returns the card
 function getExchangeCard(session) {
     var exchange = {
         contentType: "application/vnd.microsoft.card.adaptive",
@@ -411,6 +426,7 @@ function getExchangeCard(session) {
     return exchange;
 }
 
+// Creates application form for credit card and returns the card
 function getApplicationCard(session) {
     var application = {
         contentType: "application/vnd.microsoft.card.adaptive",
