@@ -1,5 +1,6 @@
 var builder = require('botbuilder');
 var acc = require('./Account');
+var customVision = require('./cognitive.js');
 
 exports.startDialog = function(bot) {
     var recognizer = new builder.LuisRecognizer('https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/02ab0ac7-1be0-4246-aa9d-7a86726bbf5d?subscription-key=d1c174e41a47422aa30e74c7f2429503&verbose=true&timezoneOffset=0&q=');
@@ -9,17 +10,19 @@ exports.startDialog = function(bot) {
     // Welcome Dialog, shows options for new users to the website.
     bot.dialog('Welcome', [
         function(session, args, next) {
-            session.sendTyping();
-            session.dialogData.args = args || {};
-            var welcome = new builder.HeroCard(session)
-                .title("Welcome to the Contoso Bank Bot")
-                .subtitle("What would you like to do today?")
-                .buttons([
-                    builder.CardAction.postBack(session, 'Cards', 'View Credit Cards'),
-                    builder.CardAction.postBack(session, 'Currency', 'View Exchange Rates'),
-                    builder.CardAction.postBack(session, 'Application', 'View Credit Card Applications')
-                ]);
-            session.send(new builder.Message(session).addAttachment(welcome));
+            if (!checkAttachment(session)) {
+                session.sendTyping();
+                session.dialogData.args = args || {};
+                var welcome = new builder.HeroCard(session)
+                    .title("Welcome to the Contoso Bank Bot")
+                    .subtitle("What would you like to do today?")
+                    .buttons([
+                        builder.CardAction.postBack(session, 'Cards', 'View Credit Cards'),
+                        builder.CardAction.postBack(session, 'Currency', 'View Exchange Rates'),
+                        builder.CardAction.postBack(session, 'Application', 'View Credit Card Applications')
+                    ]);
+                session.send(new builder.Message(session).addAttachment(welcome));
+            }
         }
     ]).triggerAction({
         matches: 'Welcome'
@@ -28,18 +31,20 @@ exports.startDialog = function(bot) {
     // Currency exchange dialog
     bot.dialog('Currency', [
         function(session, args) {
-            if (session.message && session.message.value) {
-                session.sendTyping();
-                var base = session.message.value.base;
-                var symbol = session.message.value.symbol;
-                var amount = session.message.value.amount;
-                acc.retrieveRates(session, base, symbol, amount);
-            } else {
-                session.dialogData.args = args || {};
-                var adaptiveCard = getExchangeCard(session);
-                var msg = new builder.Message(session).addAttachment(adaptiveCard)
-                session.sendTyping();
-                session.send(msg);
+            if (!checkAttachment(session)) {
+                if (session.message && session.message.value) {
+                    session.sendTyping();
+                    var base = session.message.value.base;
+                    var symbol = session.message.value.symbol;
+                    var amount = session.message.value.amount;
+                    acc.retrieveRates(session, base, symbol, amount);
+                } else {
+                    session.dialogData.args = args || {};
+                    var adaptiveCard = getExchangeCard(session);
+                    var msg = new builder.Message(session).addAttachment(adaptiveCard)
+                    session.sendTyping();
+                    session.send(msg);
+                }
             }
         }
     ]).triggerAction({
@@ -59,22 +64,24 @@ exports.startDialog = function(bot) {
     // Apply for credit card dialog. Gets card from helper function
     bot.dialog('Apply', [
         function(session, args) {
-            if (session.message && session.message.value) {
-                session.sendTyping();
-                var title = session.message.value.title;
-                var firstName = session.message.value.firstname;
-                var lastName = session.message.value.lastname;
-                var dob = session.message.value.datofbirth;
-                var email = session.message.value.email;
-                var phone = session.message.value.phone;
-                var card = session.message.value.card;
-                acc.makeApplication(session, title, firstName, lastName, dob, email, phone, card);
-                session.send("Your application for a " + card + " was successful!");
-                session.beginDialog('Welcome');
-            } else {
-                var application = getApplicationCard(session);
-                var msg = new builder.Message(session).addAttachment(application);
-                session.send(msg);
+            if (!checkAttachment(session)) {
+                if (session.message && session.message.value) {
+                    session.sendTyping();
+                    var title = session.message.value.title;
+                    var firstName = session.message.value.firstname;
+                    var lastName = session.message.value.lastname;
+                    var dob = session.message.value.datofbirth;
+                    var email = session.message.value.email;
+                    var phone = session.message.value.phone;
+                    var card = session.message.value.card;
+                    acc.makeApplication(session, title, firstName, lastName, dob, email, phone, card);
+                    session.send("Your application for a " + card + " was successful!");
+                    session.beginDialog('Welcome');
+                } else {
+                    var application = getApplicationCard(session);
+                    var msg = new builder.Message(session).addAttachment(application);
+                    session.send(msg);
+                }
             }
         }
     ]).triggerAction({
@@ -559,4 +566,15 @@ function getApplicationCard(session) {
         }
     };
     return application;
+}
+
+function checkAttachment(session) {
+    var message = session.message.text;
+
+    if ((session.message.attachments && session.message.attachments.length > 0) || message.includes('http')) {
+        customVision.analyseImage(session);
+        return true;
+    } else {
+        return false;
+    }
 }
