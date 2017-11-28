@@ -8,10 +8,10 @@ server.listen(process.env.port || process.env.PORT || 3978, function() {
 });
 
 var connector = new builder.ChatConnector({
-    // appID: '28ce156a-ebf9-4967-93f7-7291da60ebe3',
-    // appPassword: 'cbzVMBF6808)[ipyvVUX5|}'
-    appID: process.env.MICROSOFT_APP_ID,
-    appPassword: process.env.MICROSOFT_APP_PASSWORD
+    appID: '28ce156a-ebf9-4967-93f7-7291da60ebe3',
+    appPassword: 'cbzVMBF6808)[ipyvVUX5|}'
+        // appID: process.env.MICROSOFT_APP_ID,
+        // appPassword: process.env.MICROSOFT_APP_PASSWORD
 });
 
 server.post('/api/messages', connector.listen());
