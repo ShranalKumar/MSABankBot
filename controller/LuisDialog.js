@@ -3,6 +3,7 @@ var acc = require('./Account');
 var customVision = require('./cognitive.js');
 
 exports.startDialog = function(bot) {
+    console.log('here');
     var recognizer = new builder.LuisRecognizer('https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/1521dde1-84b9-4511-99e3-7d7daab04f51?subscription-key=e5047f445ab1471fa5953a834252c3ca&verbose=true&timezoneOffset=0&q=');
 
     bot.recognizer(recognizer);
