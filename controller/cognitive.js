@@ -26,7 +26,7 @@ function validResponse(session, body) {
         session.send(new builder.Message(session).addAttachment(card));
         session.message.text = "";
         session.sendTyping();
-        session.beginDialog('Welcome');
+        session.beginDialog('Currency');
     } else {
         console.log("Please try again.");
     }
