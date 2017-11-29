@@ -5,6 +5,7 @@
   "main": "app.js",
   "dependencies": {
     "botbuilder": "^3.12.0",
+    "node-base64-image": "^1.0.4",
     "restify": "^6.3.4"
   },
   "devDependencies": {},
