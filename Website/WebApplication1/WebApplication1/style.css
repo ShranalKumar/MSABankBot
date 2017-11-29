@@ -20,6 +20,7 @@
 }
 
 #chatSection {
+	display: none;
     width: 25%;
     position: fixed;
     bottom: 0px;
@@ -36,4 +37,14 @@ iframe {
     height: 100%;
     background-color: white;
     border: none;
+}
+
+.botclick {
+	float: right; 
+	width: 200px;
+	height: 50px; 
+	background-color: #F58025; 
+	color: white; 
+	font-size: 20px;
+	margin-right: 4%;
 }

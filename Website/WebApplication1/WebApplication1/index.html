@@ -13,11 +13,25 @@
         <div>        
             <img id="background" src="images/background.jpg" />
         </div>
-
-        <div id="chatSection">
+        <button class='botclick' onclick='myFunction();'>Click to open chat</button>
+		<div id="chatSection">
             <div id="chatBot">
-                <iframe src="https://webchat.botframework.com/embed/msa-contoso-bank?s=b-bTXyuaVMM.cwA.Q-4.x9cpCSFHBFuhtXpQU2lpGJu3Pw0LEPtAv40eSlZqPn8"></iframe>
-            </div>
-        </div>    
+        <iframe src="https://webchat.botframework.com/embed/msa-contoso-bank?s=b-bTXyuaVMM.cwA.Q-4.x9cpCSFHBFuhtXpQU2lpGJu3Pw0LEPtAv40eSlZqPn8">
+        </iframe>
+        </div>
+        </div>
+ 
 </body>
+<script>
+// use this to toggle
+function myFunction() {
+    var x = document.getElementById("chatSection");
+    if (x.style.display === "block") {
+        x.style.display = "none";
+    } else {
+        x.style.display = "block";
+    }
+}
+
+</script>
 </html>
