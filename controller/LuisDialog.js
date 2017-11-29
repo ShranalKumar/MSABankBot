@@ -7,8 +7,6 @@ exports.startDialog = function(bot) {
 
     bot.recognizer(recognizer);
 
-    bot.on('conversationUpdate', begin);
-
     // Welcome Dialog, shows options for new users to the website.
     bot.dialog('Welcome', [
         function(session, args, next) {
@@ -580,8 +578,4 @@ function checkAttachment(session) {
     } else {
         return false;
     }
-}
-
-function begin() {
-    bot.beginDialog('Welcome');
 }
